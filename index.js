@@ -22,52 +22,57 @@ function writeOnScreen(valueSelected) {
   const elementValue = document.getElementById("resultado");
   elementValue.value = elementValue.value.concat(valueSelected);
   buttonCleanScreen(elementValue.value, elementValue);
-  decomposeString(elementValue);
+  decomposeValueForCalculation(elementValue);
 }
 
-function decomposeString(elementValue) {
-  const calculateButton = document.getElementById("caucula");
+function decomposeValueForCalculation(elementValue) {
+  const operantionsValid = ["+", "*", "/", "-"];
+  let operantion;
 
-  calculateButton.addEventListener("click", () => {
-    const operantionsValid = ["+", "*", "/", "-"];
-    let operantion;
-
-    for (let i = 0; i < operantionsValid.length; i++) {
-      operantion = elementValue.value.indexOf(operantionsValid[i]);
-      if (operantion != -1) {
-        break;
-      }
+  for (let i = 0; i < operantionsValid.length; i++) {
+    operantion = elementValue.value.indexOf(operantionsValid[i]);
+    if (operantion != -1) {
+      break;
     }
-    let numberOn = elementValue.value.substring(0, operantion);
-    let numberTwo = elementValue.value.substring(++operantion);
-    operantion = operantion - 1;
-    numberOn = Number(numberOn);
-    numberTwo = Number(numberTwo);
-    calculate(numberOn, numberTwo, elementValue.value[operantion]);
-  });
-}
-
-function calculate(numberOn, numberTwo, operantion) {
-  let result;
-
-  switch (operantion) {
-    case "*":
-      result = numberOn * numberTwo;
-      console.log(result);
-      break;
-    case "/":
-      result = numberOn / numberTwo;
-      console.log(result);
-      break;
-    case "+":
-      result = numberOn + numberTwo;
-      console.log(result);
-      break;
-    case "-":
-      result = numberOn - numberTwo;
-      console.log(result);
-      break;
   }
+
+  let numberOn = elementValue.value.substring(0, operantion);
+  let numberTwo = elementValue.value.substring(++operantion);
+  operantion = operantion - 1;
+  numberOn = Number(numberOn);
+  numberTwo = Number(numberTwo);
+  let operantionSelected = elementValue.value[operantion];
+
+  const calculate = () => {
+    let result;
+
+    if (result != undefined) {
+      result = numberOn;
+    }
+    switch (operantionSelected) {
+      case "*":
+        result = numberOn * numberTwo;
+        console.log(result);
+
+        break;
+      case "/":
+        result = numberOn / numberTwo;
+        console.log(result);
+        break;
+      case "+":
+        result = numberOn + numberTwo;
+        console.log(result);
+        break;
+      case "-":
+        result = numberOn - numberTwo;
+        console.log(result);
+        break;
+    }
+    elementValue.value = result;
+  };
+
+  const calculateButton = document.getElementById("caucula");
+  calculateButton.addEventListener("click", calculate, true);
 }
 
 function man() {
