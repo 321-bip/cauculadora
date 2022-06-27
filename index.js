@@ -26,7 +26,7 @@ function buttonCleanScreen(elementValue, element) {
   const cleaningButton = document.querySelector(".ac");
 
   cleaningButton.addEventListener("click", () => {
-    element.value = elementValue.value = elementValue.slice(0, -0);
+    element.value = elementValue.slice(0, -0);
   });
 }
 
