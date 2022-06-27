@@ -58,11 +58,10 @@ function decomposeValueForCalculation() {
 function calculate() {
   let { operantionSelected, numberOn, numberTwo } =
     decomposeValueForCalculation();
-
   let result;
-  if (result != undefined) {
+  /* if (result != undefined) {
     result = numberOn;
-  }
+  }*/
   switch (operantionSelected) {
     case "*":
       result = numberOn * numberTwo;
