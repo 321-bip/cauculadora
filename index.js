@@ -1,11 +1,24 @@
-function getValue() {
-  const nodeLIst = document.querySelectorAll(".operationAdNumber");
+const nodeLIst = document.querySelectorAll(".operationAdNumber");
+const elementValue = document.getElementById("resultado");
 
+function getValue() {
   nodeLIst.forEach((element) => {
     element.addEventListener("click", () => {
       let valueSelected = element.value;
       writeOnScreen(valueSelected);
+      decomposeValueForCalculation();
     });
+  });
+}
+
+function breakOperation(condition) {
+  const operantionsbreak = ["+", "*", "/", "-"];
+  nodeLIst.forEach((element) => {
+    for (let i = 0; i < operantionsbreak.length; i++) {
+      if (element.value.indexOf(operantionsbreak[i]) != -1) {
+        element.disabled = condition;
+      }
+    }
   });
 }
 
@@ -13,25 +26,22 @@ function buttonCleanScreen(elementValue, element) {
   const cleaningButton = document.querySelector(".ac");
 
   cleaningButton.addEventListener("click", () => {
-    const newValue = (elementValue.value = elementValue.slice(0, -0));
-    element.value = newValue;
+    element.value = elementValue.value = elementValue.slice(0, -0);
   });
 }
 
 function writeOnScreen(valueSelected) {
-  const elementValue = document.getElementById("resultado");
   elementValue.value = elementValue.value.concat(valueSelected);
   buttonCleanScreen(elementValue.value, elementValue);
-  decomposeValueForCalculation(elementValue);
 }
 
-function decomposeValueForCalculation(elementValue) {
+function decomposeValueForCalculation() {
   const operantionsValid = ["+", "*", "/", "-"];
   let operantion;
-
   for (let i = 0; i < operantionsValid.length; i++) {
     operantion = elementValue.value.indexOf(operantionsValid[i]);
     if (operantion != -1) {
+      breakOperation(true);
       break;
     }
   }
@@ -42,40 +52,42 @@ function decomposeValueForCalculation(elementValue) {
   numberOn = Number(numberOn);
   numberTwo = Number(numberTwo);
   let operantionSelected = elementValue.value[operantion];
+  return { operantionSelected, numberOn, numberTwo };
+}
 
-  const calculate = () => {
-    let result;
+function calculate() {
+  let { operantionSelected, numberOn, numberTwo } =
+    decomposeValueForCalculation();
 
-    if (result != undefined) {
-      result = numberOn;
-    }
-    switch (operantionSelected) {
-      case "*":
-        result = numberOn * numberTwo;
-        console.log(result);
+  let result;
+  if (result != undefined) {
+    result = numberOn;
+  }
+  switch (operantionSelected) {
+    case "*":
+      result = numberOn * numberTwo;
+      break;
+    case "/":
+      result = numberOn / numberTwo;
+      break;
+    case "+":
+      result = numberOn + numberTwo;
+      break;
+    case "-":
+      result = numberOn - numberTwo;
+      break;
+  }
+  breakOperation(false);
+  elementValue.value = result;
+}
 
-        break;
-      case "/":
-        result = numberOn / numberTwo;
-        console.log(result);
-        break;
-      case "+":
-        result = numberOn + numberTwo;
-        console.log(result);
-        break;
-      case "-":
-        result = numberOn - numberTwo;
-        console.log(result);
-        break;
-    }
-    elementValue.value = result;
-  };
-
+function events() {
   const calculateButton = document.getElementById("caucula");
-  calculateButton.addEventListener("click", calculate, true);
+  calculateButton.addEventListener("click", calculate);
 }
 
 function man() {
+  events();
   getValue();
 }
 man();
