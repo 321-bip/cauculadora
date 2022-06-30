@@ -6,27 +6,9 @@ function getValue() {
     element.addEventListener("click", () => {
       let valueSelected = element.value;
       writeOnScreen(valueSelected);
+      breakOperation(false);
       decomposeValueForCalculation();
     });
-  });
-}
-
-function breakOperation(condition) {
-  const operantionsbreak = ["+", "*", "/", "-"];
-  nodeLIst.forEach((element) => {
-    for (let i = 0; i < operantionsbreak.length; i++) {
-      if (element.value.indexOf(operantionsbreak[i]) != -1) {
-        element.disabled = condition;
-      }
-    }
-  });
-}
-
-function buttonCleanScreen(elementValue, element) {
-  const cleaningButton = document.querySelector(".ac");
-
-  cleaningButton.addEventListener("click", () => {
-    element.value = elementValue.slice(0, -0);
   });
 }
 
@@ -59,25 +41,49 @@ function calculate() {
   let { operantionSelected, numberOn, numberTwo } =
     decomposeValueForCalculation();
   let result;
-  /* if (result != undefined) {
-    result = numberOn;
-  }*/
-  switch (operantionSelected) {
-    case "*":
-      result = numberOn * numberTwo;
-      break;
-    case "/":
-      result = numberOn / numberTwo;
-      break;
-    case "+":
-      result = numberOn + numberTwo;
-      break;
-    case "-":
-      result = numberOn - numberTwo;
-      break;
+  if (elementValue.value != "" && operantionSelected != undefined) {
+    switch (operantionSelected) {
+      case "*":
+        result = numberOn * numberTwo;
+        break;
+      case "/":
+        result = numberOn / numberTwo;
+        if (Number.isNaN(result) || !isFinite(result)) {
+          result = 0;
+        }
+        break;
+      case "+":
+        result = numberOn + numberTwo;
+        break;
+      case "-":
+        result = numberOn - numberTwo;
+        break;
+    }
+  } else {
+    return decomposeValueForCalculation();
   }
   breakOperation(false);
   elementValue.value = result;
+}
+
+function buttonCleanScreen(elementValue, element) {
+  const cleaningButton = document.querySelector(".ac");
+
+  cleaningButton.addEventListener("click", () => {
+    element.value = elementValue.slice(0, -0);
+    breakOperation(false);
+  });
+}
+
+function breakOperation(condition) {
+  const operantionsbreak = ["+", "*", "/", "-"];
+  nodeLIst.forEach((element) => {
+    for (let i = 0; i < operantionsbreak.length; i++) {
+      if (element.value.indexOf(operantionsbreak[i]) != -1) {
+        element.disabled = condition;
+      }
+    }
+  });
 }
 
 function events() {
@@ -87,6 +93,7 @@ function events() {
 
 function man() {
   events();
+  breakOperation(true);
   getValue();
 }
 man();
