@@ -1,47 +1,35 @@
-const nodeLIst = document.querySelectorAll(".operationAdNumber");
-const elementValue = document.getElementById("resultado");
-
-function getValue() {
-  nodeLIst.forEach((element) => {
-    element.addEventListener("click", () => {
-      let valueSelected = element.value;
-      writeOnScreen(valueSelected);
-      breakOperation(false);
-      decomposeValueForCalculation();
-    });
-  });
-}
-
 function writeOnScreen(valueSelected) {
-  elementValue.value = elementValue.value.concat(valueSelected);
-  buttonCleanScreen(elementValue.value, elementValue);
+  let { valorRecuperado } = getValue();
+  valorRecuperado.value = valorRecuperado.value.concat(valueSelected);
 }
 
 function decomposeValueForCalculation() {
   const operantionsValid = ["+", "*", "/", "-"];
+  let { valorRecuperado } = getValue();
   let operantion;
   for (let i = 0; i < operantionsValid.length; i++) {
-    operantion = elementValue.value.indexOf(operantionsValid[i]);
+    operantion = valorRecuperado.value.indexOf(operantionsValid[i]);
     if (operantion != -1) {
-      breakOperation(true);
+      continueOperation(false);
       break;
     }
   }
 
-  let numberOn = elementValue.value.substring(0, operantion);
-  let numberTwo = elementValue.value.substring(++operantion);
+  let numberOn = valorRecuperado.value.substring(0, operantion);
+  let numberTwo = valorRecuperado.value.substring(++operantion);
   operantion = operantion - 1;
   numberOn = Number(numberOn);
   numberTwo = Number(numberTwo);
-  let operantionSelected = elementValue.value[operantion];
+  let operantionSelected = valorRecuperado.value[operantion];
   return { operantionSelected, numberOn, numberTwo };
 }
 
 function calculate() {
   let { operantionSelected, numberOn, numberTwo } =
     decomposeValueForCalculation();
+  let { valorRecuperado } = getValue();
   let result;
-  if (elementValue.value != "" && operantionSelected != undefined) {
+  if (valorRecuperado.value != "" && operantionSelected != undefined) {
     switch (operantionSelected) {
       case "*":
         result = numberOn * numberTwo;
@@ -59,41 +47,61 @@ function calculate() {
         result = numberOn - numberTwo;
         break;
     }
-  } else {
-    return decomposeValueForCalculation();
   }
-  breakOperation(false);
-  elementValue.value = result;
+  continueOperation(true);
+  valorRecuperado.value = result;
 }
 
-function buttonCleanScreen(elementValue, element) {
-  const cleaningButton = document.querySelector(".ac");
-
-  cleaningButton.addEventListener("click", () => {
-    element.value = elementValue.slice(0, -0);
-    breakOperation(false);
-  });
+function getValue() {
+  const elementValue = document.getElementById("resultado");
+  let valorRecuperado = elementValue;
+  return { valorRecuperado };
 }
 
-function breakOperation(condition) {
-  const operantionsbreak = ["+", "*", "/", "-"];
-  nodeLIst.forEach((element) => {
+function buttonCleanScreen() {
+  let { valorRecuperado } = getValue();
+  valorRecuperado.value = "";
+  continueOperation(false);
+}
+
+function continueOperation(condition) {
+  const nodeLIst = document.querySelectorAll(".operationAdNumber");
+
+  for (let index = 0; index < nodeLIst.length; index++) {
+    const element = nodeLIst[index];
+
+    const operantionsbreak = ["+", "*", "/", "-"];
     for (let i = 0; i < operantionsbreak.length; i++) {
       if (element.value.indexOf(operantionsbreak[i]) != -1) {
-        element.disabled = condition;
+        element.disabled = !condition;
       }
     }
+  }
+}
+
+function events(element) {
+  const calculateButton = document.getElementById("caucula");
+  calculateButton.addEventListener("click", calculate);
+
+  element.addEventListener("click", () => {
+    continueOperation(true);
+
+    let valueSelected = element.value;
+    writeOnScreen(valueSelected);
+    decomposeValueForCalculation();
+  });
+
+  const cleaningButton = document.querySelector(".ac");
+  cleaningButton.addEventListener("click", buttonCleanScreen);
+}
+
+function main() {
+  continueOperation(false);
+
+  const nodeLIst = document.querySelectorAll(".operationAdNumber");
+  nodeLIst.forEach((element) => {
+    events(element);
   });
 }
 
-function events() {
-  const calculateButton = document.getElementById("caucula");
-  calculateButton.addEventListener("click", calculate);
-}
-
-function man() {
-  events();
-  breakOperation(true);
-  getValue();
-}
-man();
+main();
