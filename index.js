@@ -1,82 +1,84 @@
 function writeOnScreen(valueSelected) {
-  let { valorRecuperado } = getValue();
-  valorRecuperado.value = valorRecuperado.value.concat(valueSelected);
+  const elementValue = document.getElementById("resultado");
+  elementValue.value = elementValue.value.concat(valueSelected);
 }
 
-function decomposeValueForCalculation() {
+function getOperantion() {
   const operantionsValid = ["+", "*", "/", "-"];
-  let { valorRecuperado } = getValue();
+  const elementValue = document.getElementById("resultado");
   let operantion;
+
   for (let i = 0; i < operantionsValid.length; i++) {
-    operantion = valorRecuperado.value.indexOf(operantionsValid[i]);
+    operantion = elementValue.value.indexOf(operantionsValid[i]);
+
     if (operantion != -1) {
-      continueOperation(false);
+      continuesOperation(false);
       break;
     }
   }
 
-  let numberOn = valorRecuperado.value.substring(0, operantion);
-  let numberTwo = valorRecuperado.value.substring(++operantion);
+  return { operantion };
+}
+
+function decomposeValueForCalculation() {
+  let { operantion } = getOperantion();
+  const elementValue = document.getElementById("resultado");
+  let numberOn = elementValue.value.substring(0, operantion);
+  let numberTwo = elementValue.value.substring(++operantion);
+
   operantion = operantion - 1;
   numberOn = Number(numberOn);
   numberTwo = Number(numberTwo);
-  let operantionSelected = valorRecuperado.value[operantion];
+  let operantionSelected = elementValue.value[operantion];
   return { operantionSelected, numberOn, numberTwo };
 }
 
 function calculate() {
   let { operantionSelected, numberOn, numberTwo } =
     decomposeValueForCalculation();
-  let { valorRecuperado } = getValue();
-  let result;
-  if (valorRecuperado.value != "" && operantionSelected != undefined) {
+
+  const elementValue = document.getElementById("resultado");
+
+  if (elementValue.value != "" && operantionSelected != undefined) {
     switch (operantionSelected) {
       case "*":
-        result = numberOn * numberTwo;
+        elementValue.value = numberOn * numberTwo;
         break;
       case "/":
-        result = numberOn / numberTwo;
-        if (Number.isNaN(result) || !isFinite(result)) {
-          result = 0;
+        elementValue.value = numberOn / numberTwo;
+        if (Number.isNaN(elementValue.value) || !isFinite(elementValue.value)) {
+          elementValue.value = 0;
         }
         break;
       case "+":
-        result = numberOn + numberTwo;
+        elementValue.value = numberOn + numberTwo;
         break;
       case "-":
-        result = numberOn - numberTwo;
+        elementValue.value = numberOn - numberTwo;
         break;
     }
+    continuesOperation(true);
   }
-  continueOperation(true);
-  valorRecuperado.value = result;
-}
-
-function getValue() {
-  const elementValue = document.getElementById("resultado");
-  let valorRecuperado = elementValue;
-  return { valorRecuperado };
 }
 
 function buttonCleanScreen() {
-  let { valorRecuperado } = getValue();
-  valorRecuperado.value = "";
-  continueOperation(false);
+  const elementValue = document.getElementById("resultado");
+  elementValue.value = "";
+  continuesOperation(false);
 }
 
-function continueOperation(condition) {
+function continuesOperation(condition) {
   const nodeLIst = document.querySelectorAll(".operationAdNumber");
 
-  for (let index = 0; index < nodeLIst.length; index++) {
-    const element = nodeLIst[index];
-
+  nodeLIst.forEach((element) => {
     const operantionsbreak = ["+", "*", "/", "-"];
+
     for (let i = 0; i < operantionsbreak.length; i++) {
       if (element.value.indexOf(operantionsbreak[i]) != -1) {
         element.disabled = !condition;
       }
     }
-  }
+  });
 }
 
 function events(element) {
@@ -84,11 +86,9 @@ function events(element) {
   calculateButton.addEventListener("click", calculate);
 
   element.addEventListener("click", () => {
-    continueOperation(true);
-
-    let valueSelected = element.value;
-    writeOnScreen(valueSelected);
-    decomposeValueForCalculation();
+    continuesOperation(true);
+    writeOnScreen(element.value);
+    getOperantion();
   });
 
   const cleaningButton = document.querySelector(".ac");
@@ -96,10 +96,11 @@ function events(element) {
 }
 
 function main() {
-  continueOperation(false);
+  continuesOperation(false);
 
   const nodeLIst = document.querySelectorAll(".operationAdNumber");
   nodeLIst.forEach((element) => {
+    getOperantion();
     events(element);
   });
 }
