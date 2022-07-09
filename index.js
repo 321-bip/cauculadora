@@ -3,7 +3,7 @@ function writeOnScreen(valueSelected) {
   elementValue.value = elementValue.value.concat(valueSelected);
 }
 
-function getOperantion() {
+function getPositionOperantion() {
   const operantionsValid = ["+", "*", "/", "-"];
   const elementValue = document.getElementById("resultado");
   let operantion;
@@ -16,12 +16,12 @@ function getOperantion() {
       break;
     }
   }
-
+  console.log(operantion);
   return { operantion };
 }
 
 function decomposeValueForCalculation() {
-  let { operantion } = getOperantion();
+  let { operantion } = getPositionOperantion();
   const elementValue = document.getElementById("resultado");
   let numberOn = elementValue.value.substring(0, operantion);
   let numberTwo = elementValue.value.substring(++operantion);
@@ -88,7 +88,7 @@ function events(element) {
   element.addEventListener("click", () => {
     continuesOperation(true);
     writeOnScreen(element.value);
-    getOperantion();
+    getPositionOperantion();
   });
 
   const cleaningButton = document.querySelector(".ac");
@@ -100,7 +100,6 @@ function main() {
 
   const nodeLIst = document.querySelectorAll(".operationAdNumber");
   nodeLIst.forEach((element) => {
-    getOperantion();
     events(element);
   });
 }
